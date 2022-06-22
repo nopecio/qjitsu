@@ -1,0 +1,122 @@
+data CommunityStart
+	config{
+		output :json
+	}
+
+model User as [$default, $tesla, $jenny, $veronika]{
+	name	=['CF_USER', 'Nikola Tesla', 'Jenny', 'Veronika']
+	url		=['profile-usercf','profile-tesla', 'profile-jenny', 'profile-veronika']
+	avatar	=['elliot', 'christian', 'jenny', 'veronika']
+}:notify 
+
+model Board as [$board] {
+	boardName= 'My First Board'
+	array on threads {
+		threadName= 'My First thread'
+		array on messages {
+			user= 'default'
+			content= 'This is a very large but spountaneous message'
+			multi array on replies {
+				user= [$tesla, $jenny, $veronica]
+				content= 'This is a very large but spountaneous message, it may seem like the user was trying to overflow the comment label'
+			}
+		}
+	}
+}:notify
+
+model Events as [$event] {
+	name='Super event'
+	eventDate= '25-02-2018 19:00'
+	location.address.streetLineA='La Petrilla, Parcela 36'
+}:notify
+
+model EventInvited as 'eventInvited'{
+	event=$event
+	multi array on invited [$default, $tesla, $jenny, $veronika]
+	}
+
+model Track as [$track] {
+	originating=$default
+	target = $tesla
+}:notify
+
+model Camera as [$cam] {
+	name='Patio Cam'
+	url='http://50.193.253.108/mjpg/video.mjpg?COUNTER'
+	location.lat=-33.442334
+	location.lon=-70.654524
+}:notify
+
+model Community as [$community] {
+	name='La Petrilla'
+	description= 'Comunidad La Petrilla, algarrobo'
+	public =true
+	visible=true
+	array on boards [$board]
+	array on trackedActions [$track]
+	array on cameras [$cam]
+}:notify
+
+model CommunityUser as 'cu'{
+	community= $community
+	user=$default
+	array on communities [$community]
+	}
+	
+model CommunityEvents as [$communityEvents]{
+	community= $community
+	array on events [event]
+	}
+	
+model CommunityAnnounces as 'communityAnnounces'{
+	community= $community
+	array on boards {
+		name='Ventas de gatos'
+		description='venda su gato aqui'
+		array on announces {
+			title='Vendo Mi Gato'
+			content='Es un lindo gato, hace en su cajita de arena y es muy obediente'
+			price=20000
+			currency.name='Peso Chileno'
+			currency.sign='$'
+			units=1
+			mainImage='small-kitten-meowing'
+			user=$tesla
+			start= '01-01-2018 00:00'
+			array on replies {
+				user=$default
+				content='Puedo dar fe de que es un muy buen gato'
+			}
+		}
+	}
+}
+
+model GeoCache  as 'geoCache' {
+		if (vari == 1) {
+			cacheData= $date
+			lat=-33.442334
+			lon=-70.654524
+			vari=1
+			dos=2
+		
+			dos=3
+			
+			address='Teatinos Barrio Brasil'
+		}
+	}
+	
+model Alert as 'Alert' {
+	title='Home robbery'
+	content='Violent Home robbery reported'
+	actionRadius=1000
+	start=$date
+	creationDate='16-02-2018 21:00'
+	alertLevel=$AlertLevel.HIGH
+	location.lat=-33.442334
+	location.lon=-70.654524
+	originatingUser=$default
+	multi array on history {
+		title=['Alarm reported','Police contacted', 'Case created', 'Reporter contacted']
+		creationDate=['Feb 16, 2018 9:05:01 PM','Feb 16, 2018 9:15:01 PM', 'Feb 16, 2018 9:25:01 PM','Feb 16, 2018 9:30:01 PM']
+	}
+}
